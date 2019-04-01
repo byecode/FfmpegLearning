@@ -23,14 +23,15 @@ int main(int argv, char* argc[]) {
 		printf("error when init ttf");
 	}
 	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1,SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	TTF_Font *font = TTF_OpenFont("blackfont.ttf", 30);
+	TTF_Font *font = TTF_OpenFont("blackfont.ttf", 16);
 
 	SDL_Color color = { 255, 255, 255 };
 
 
-	SDL_Surface *surf = TTF_RenderText_Blended(font, avcodec_configuration(), color);
+	SDL_Surface *surf = TTF_RenderText_Blended(font, "hello",color);
 
 	SDL_Texture *text = SDL_CreateTextureFromSurface(renderer, surf);
+
 
 	SDL_FreeSurface(surf);
 
