@@ -3,40 +3,63 @@
 
 extern "C" {
 #include "libavcodec/avcodec.h";
-#include "SDL/SDL.h"
+#include "SDL/SDL.h";
+#include"SDL/SDL_ttf.h"
+
 }
 int main(int argv, char* argc[]) {
 
-	SDL_Window *window;                    // Declare a pointer
 
-	// 07-14-2018: Modified by ZDH
-	// SDL_Init(SDL_INIT_VIDEO);              // Initialize SDL2
-	SDL_Init(SDL_INIT_EVERYTHING);              // Initialize SDL2
-										   // Create an application window with the following settings:
-	window = SDL_CreateWindow(
-		avcodec_configuration(),                  // window title
-		SDL_WINDOWPOS_UNDEFINED,           // initial x position
-		SDL_WINDOWPOS_UNDEFINED,           // initial y position
-		640,                               // width, in pixels
-		480,                               // height, in pixels
-		SDL_WINDOW_OPENGL                  // flags - see below
-	);
+	const int SCREEN_WIDTH = 680;
+	const int SCREEN_HEIGHT = 400;
 
-	// Check that the window was successfully created
-	if (window == NULL) {
-		// In the case that the window could not be made...
-		printf("Could not create window: %s\n", SDL_GetError());
-		return 1;
+	SDL_Window *window = SDL_CreateWindow("Font Test",
+	   SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+	   SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+
+
+	int ret = TTF_Init();
+	if (ret < 0) {
+		printf("error when init ttf");
+	}
+	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1,SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	TTF_Font *font = TTF_OpenFont("blackfont.ttf", 30);
+
+	SDL_Color color = { 255, 255, 255 };
+
+
+	SDL_Surface *surf = TTF_RenderText_Blended(font, avcodec_configuration(), color);
+
+	SDL_Texture *text = SDL_CreateTextureFromSurface(renderer, surf);
+
+	SDL_FreeSurface(surf);
+
+	TTF_CloseFont(font);
+
+	bool quit = false;
+	SDL_Event e;
+	while (!quit)
+	{
+		//事件栈轮询
+		while (SDL_PollEvent(&e))
+		{
+			//按右上角的X或点鼠标退出
+			if (e.type == SDL_QUIT || e.type == SDL_MOUSEBUTTONDOWN) quit = true;
+			//清空渲染器
+			SDL_RenderClear(renderer);
+			//渲染字体
+			SDL_RenderCopy(renderer, text, NULL, NULL);
+			//呈现渲染器
+			SDL_RenderPresent(renderer);
+		}
 	}
 
-	// The window is open: could enter program loop here (see SDL_PollEvent())
-
-	SDL_Delay(3000);  // Pause execution for 3000 milliseconds, for example
-
-	// Close and destroy the window
+	//释放资源
+	SDL_DestroyTexture(text);
+	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 
-	// Clean up
 	SDL_Quit();
+
 	return 0;
 }
