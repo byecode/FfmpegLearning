@@ -2,7 +2,8 @@
 #include<iostream>
 
 extern "C" {
-#include "libavcodec/avcodec.h"
+#include "libavcodec/avcodec.h";
+#include "libsdl/SDL.h"
 }
 int main()
 {
